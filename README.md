@@ -2,7 +2,7 @@
 
 This repository contains the code for the paper:
 
-**“Mechanism-Driven Cross-Modality Modeling for Gene Regulatory Network Inference from Single-Cell Multi-Omics” **
+**“Mechanism-Driven Cross-Modality Modeling for Gene Regulatory Network Inference from Single-Cell Multi-Omics”**
 
 GRaSP is a **mechanism-driven** framework that explicitly models the **TF–RE–TG cascade** and learns regulatory associations from paired scRNA-seq + scATAC-seq data under **biologically feasible** cross-modality interactions.
 
@@ -51,7 +51,7 @@ By default, `main.py` expects these CSV files under `--data_dir`:
 
 All expression/accessibility CSVs are stored as **(features × samples)** and loaded as **(samples × features)** internally.
 
-### 2) Knowledge priors (optional but recommended)
+### 2) Knowledge priors
 
 #### TF-RE motif prior (RE × TF)
 Preferred sparse format:
@@ -162,14 +162,3 @@ Recommended outputs:
 * `IG_RE_to_TG_topk.csv`
 * `IG_RE_to_TF_topk.csv`
 * `IG_TG_to_TF_topk.csv`
-
----
-
-## Notes on Scalability
-
-* The cross-attention implementation is **sparse** and only computes attention on prior-allowed edges.
-* The alignment loss does **not** use dense BCE over all pairs; instead it uses:
-
-  * positives = allowed edges
-  * negatives = sampled disallowed edges with collision avoidance
-* For interpretability, long-format TopK edge lists are preferred to avoid generating huge dense matrices.
