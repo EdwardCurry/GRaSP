@@ -1,15 +1,18 @@
 # GRaSP
 
-This repository contains the code used in the paper:
+This repository contains the code for the paper:
 
-**"Inferring Gene Regulatory Network from Single-cell Multi-omics Data with Knowledge Guided Sparse Attention"**
+**“Mechanism-Driven Cross-Modality Modeling for Gene Regulatory Network Inference from Single-Cell Multi-Omics” (KDD’26 submission)**
 
-The current codebase implements a **sparse, prior-guided neighbor attention**:
-- Cross-attention is computed **only on prior-allowed edges** (no dense TF×RE / RE×TG attention matrix).
-- The **alignment loss is strictly consistent** with this sparse implementation:
-  - positives = allowed prior edges
-  - negatives = sampled from disallowed edges with collision avoidance
-- Integrated Gradients (IG) interpretability is separated into a dedicated script (`interpret.py`).
+GRaSP (Gene Regulatory inference with Sparse Prior-attention) is a **mechanism-driven** framework that explicitly models the **TF–RE–TG cascade** and learns regulatory associations from paired scRNA-seq + scATAC-seq data under **biologically feasible** cross-modality interactions.
+
+Key design points (aligned with the paper):
+- **Mechanism-driven dual modeling**: two symmetric predictors  
+  - `f_TG`: (TF, RE) → TG  
+  - `f_TF`: (TG, RE) → TF
+- **Knowledge-guided sparse cross-attention (KG-SCA)**: cross-attention is computed **only on prior-feasible edges** (no dense TF×RE / RE×TG full attention).
+- **Soft prior-alignment regularization** encourages learned interactions to be consistent with motif / proximity feasibility masks, without trivially copying the prior.
+- **Attribution-based GRN construction** uses Integrated Gradients (IG) + learned interaction strengths, with **rank-based calibration** and **rank-based sparsification** (no fixed global threshold is required for network export).
 
 ---
 
