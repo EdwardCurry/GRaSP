@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.env/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Model outputs
+*.pt
+*.joblib
+
+# Data files
+*.csv
+*.npz
+*.h5
+*.h5ad
+*.hkl
+
+# Wandb
+wandb/
+
+# Training runs
+runs/

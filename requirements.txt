@@ -1,0 +1,11 @@
+torch
+numpy
+pandas
+scikit-learn
+joblib
+transformers
+captum
+
+# Optional
+# linformer      # falls back to dense TransformerEncoder if not installed
+# wandb          # experiment tracking
