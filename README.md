@@ -4,21 +4,24 @@
 
 This repository contains the code for the paper:
 
-**“Mechanism-Driven Cross-Modality Modeling for Gene Regulatory Network Inference from Single-Cell Multi-Omics”**
+**"Mechanism-Driven Cross-Modality Modeling for Gene Regulatory Network Inference from Single-Cell Multi-Omics"**
 
 GRaSP is a **mechanism-driven** framework for gene regulatory network (GRN) inference from paired single-cell RNA-seq and single-cell ATAC-seq data. It explicitly models the **transcription factor–regulatory element–target gene (TF–RE–TG) cascade** and learns regulatory associations under biologically feasible cross-modality interactions derived from TF binding motifs and genomic proximity priors.
 
+---
 
 ## Repository Structure
 
-```text
+```
 .
 ├── preprocessing.py              # preprocessing utilities for RNA/ATAC matrices
 ├── data_augmentation.py          # train/test split and training-set augmentation
 ├── main.py                       # model training
 ├── interpret.py                  # Integrated Gradients-based GRN extraction
 ├── examples/
-│   └── test_data/                # small reviewer/test dataset for smoke testing
+│   └── test_data/                # small test dataset for smoke testing
+├── requirements.txt
+├── LICENSE
 └── README.md
 ```
 
@@ -29,10 +32,10 @@ Core scripts:
   - Produces aligned RNA/ATAC matrices and cell type labels, or equivalent matrices that match the expected input format below.
 
 - **`data_augmentation.py`**
-  1. Splits raw cells into train/test sets before augmentation.
-  2. Augments only the training set using metacell generation and within-cell-type shuffling.
-  3. Keeps the test set as unaugmented raw cells.
-  4. Saves train/test matrices for TFs, target genes, regulatory elements, and cell type labels.
+    1. Splits raw cells into train/test sets before augmentation.
+    2. Augments only the training set using metacell generation and within-cell-type shuffling.
+    3. Keeps the test set as unaugmented raw cells.
+    4. Saves train/test matrices for TFs, target genes, regulatory elements, and cell type labels.
 
 - **`main.py`** — training only
   - Trains the joint GRaSP model with knowledge-guided sparse cross-attention.
@@ -55,7 +58,7 @@ conda create -n grasp python=3.10 -y
 conda activate grasp
 ```
 
-Install PyTorch following the command appropriate for your CUDA version from the official PyTorch installation page. For example, for a recent CUDA-enabled environment:
+Install PyTorch following the command appropriate for your CUDA version from the [official PyTorch installation page](https://pytorch.org/get-started/locally/). For example, for a recent CUDA-enabled environment:
 
 ```bash
 pip install torch torchvision torchaudio
@@ -64,13 +67,18 @@ pip install torch torchvision torchaudio
 Install the remaining dependencies:
 
 ```bash
+pip install -r requirements.txt
+```
+
+Or install individually:
+
+```bash
 pip install numpy pandas scikit-learn transformers joblib captum linformer wandb
 ```
 
 Notes:
-
 - `captum` is required for `interpret.py`.
-- `linformer` is optional. If it is unavailable, training can fall back to a dense Transformer encoder, but this may be slower for larger inputs.
+- `linformer` is optional. If unavailable, training falls back to a dense Transformer encoder, but may be slower for larger inputs.
 - `wandb` is optional and can be disabled if experiment tracking is not needed.
 
 ---
@@ -81,7 +89,7 @@ Notes:
 
 By default, `main.py` expects the following CSV files under `--data_dir`:
 
-```text
+```
 train_tf_expression.csv
 train_tg_expression.csv
 train_atac_data.csv
@@ -95,7 +103,6 @@ test_cell_types.csv
 All expression/accessibility CSVs are stored as **features × samples** and are loaded internally as **samples × features**.
 
 Expected matrix meaning:
-
 - `*_tf_expression.csv`: expression matrix for transcription factors.
 - `*_tg_expression.csv`: expression matrix for target genes.
 - `*_atac_data.csv`: chromatin accessibility matrix for regulatory elements/peaks.
@@ -106,56 +113,40 @@ Expected matrix meaning:
 #### TF–RE motif prior
 
 Preferred sparse format:
-
-```text
+```
 tf_re_motif_sparse.npz
 ```
-
 with fields:
-
 - `row` — integer row indices.
 - `col` — integer column indices.
 - `shape` — matrix shape `(num_RE, num_TF)`.
 
 Fallback dense format:
-
-```text
+```
 tf_re_motif.csv
 ```
-
 as a binary matrix with rows = RE/peak names and columns = TF names.
 
 #### TG–RE TSS proximity prior
 
 Preferred sparse format:
-
-```text
+```
 tg_re_sparse_matrix.npz
 ```
-
 with fields:
-
 - `row` — integer row indices.
 - `col` — integer column indices.
 - `shape` — matrix shape `(num_TG, num_RE)`.
 
-If priors are missing, the model may run with empty priors, but this is not recommended for meaningful knowledge-guided sparse attention.
+> If priors are missing, the model may run with empty priors, but this is not recommended for meaningful knowledge-guided sparse attention.
 
 ---
 
-## Example / Test Data for Reviewers
+## Example / Test Data
 
-A small test dataset is provided under:
+A small synthetic test dataset is provided under `examples/test_data/`. This dataset is intended only for **installation verification and smoke testing** — it is deliberately small and should not be used to reproduce paper-level benchmark results.
 
-```text
-examples/test_data/
 ```
-
-This dataset is intended only for **installation checking and smoke testing**. It is deliberately small and should not be used to reproduce the paper-level benchmark results.
-
-The directory should contain the same files expected by `main.py`:
-
-```text
 examples/test_data/
 ├── train_tf_expression.csv
 ├── train_tg_expression.csv
@@ -165,25 +156,15 @@ examples/test_data/
 ├── test_tg_expression.csv
 ├── test_atac_data.csv
 ├── test_cell_types.csv
-├── tf_re_motif_sparse.npz          # or tf_re_motif.csv
+├── tf_re_motif_sparse.npz
 └── tg_re_sparse_matrix.npz
 ```
 
-The example dataset is designed to test the following functions:
-
-1. loading TF, TG, and RE matrices;
-2. loading motif and TSS-proximity priors;
-3. fitting scalers on the training set;
-4. training a small GRaSP model;
-5. saving checkpoints and configuration files;
-6. running Integrated Gradients on at least one cell type;
-7. generating top-ranked regulatory edge lists.
-
 ---
 
-## Quick Start: Run the Example/Test Data
+## Quick Start: Reproducing Key Results with Test Data
 
-The following commands run a minimal end-to-end test using the small example dataset.
+The following commands run a minimal end-to-end test using the provided example dataset.
 
 ### Step 1. Train GRaSP on the example data
 
@@ -201,8 +182,7 @@ python main.py \
 ```
 
 Expected outputs:
-
-```text
+```
 runs/grasp_example/best_model.pt
 runs/grasp_example/scaler_tf.joblib
 runs/grasp_example/scaler_re.joblib
@@ -211,19 +191,17 @@ runs/grasp_example/feature_names.json
 runs/grasp_example/run_config.json
 ```
 
-### Step 2. Identify an available test cell type
-
-If you are not sure which cell type label is present in the example dataset, run:
+### Step 2. Identify available test cell types
 
 ```bash
-python - <<'PY'
+python -c "
 import pandas as pd
 labels = pd.read_csv('examples/test_data/test_cell_types.csv')
 print(labels.iloc[:, 0].dropna().astype(str).unique())
-PY
+"
 ```
 
-Use one of the printed labels as `<CELL_TYPE_NAME>` in the next command.
+Use one of the printed labels as `<CELL_TYPE>` in the next step.
 
 ### Step 3. Run Integrated Gradients and extract GRN edge lists
 
@@ -232,35 +210,33 @@ python interpret.py \
   --data_dir examples/test_data \
   --run_dir runs/grasp_example \
   --ckpt best_model.pt \
-  --cell_type <CELL_TYPE_NAME> \
+  --cell_type <CELL_TYPE> \
   --use_original_only \
   --n_steps 16 \
   --topk 50
 ```
 
 Expected output directory:
-
-```text
-runs/grasp_example/interpret/<CELL_TYPE_NAME>/
+```
+runs/grasp_example/interpret/<CELL_TYPE>/
 ```
 
-Expected output files include:
-
-```text
+Expected output files:
+```
 IG_TF_to_TG_topk.csv
 IG_RE_to_TG_topk.csv
 IG_RE_to_TF_topk.csv
 IG_TG_to_TF_topk.csv
 ```
 
-### Step 4. Optional output check
+### Step 4. Verify outputs
 
 ```bash
 test -f runs/grasp_example/best_model.pt && echo "Model checkpoint found."
 find runs/grasp_example/interpret -name "*topk.csv" -print
 ```
 
-If the checkpoint and at least one `*topk.csv` file are present, the installation and example workflow are functioning.
+If the checkpoint and at least one `*topk.csv` file are present, the installation and example workflow are functioning correctly.
 
 ---
 
@@ -268,15 +244,11 @@ If the checkpoint and at least one `*topk.csv` file are present, the installatio
 
 ### Step 1. Prepare data
 
-If starting from raw paired scRNA-seq and scATAC-seq data, first run the preprocessing and data augmentation pipeline. The exact preprocessing command depends on the input format. The output should match the files listed in **Inputs / Expected Files**.
-
-Example:
+If starting from raw paired scRNA-seq and scATAC-seq data, run the preprocessing and augmentation pipeline. The output should match the files listed in **Inputs / Expected Files**.
 
 ```bash
 python data_augmentation.py
 ```
-
-This should generate the required `train_*.csv` and `test_*.csv` files in the selected output directory.
 
 ### Step 2. Train the model
 
@@ -293,8 +265,6 @@ python main.py \
   --neg_k 64
 ```
 
-Training outputs will be saved to `runs/grasp_full/`.
-
 ### Step 3. Interpret a cell type
 
 ```bash
@@ -302,7 +272,7 @@ python interpret.py \
   --data_dir /path/to/processed_data \
   --run_dir runs/grasp_full \
   --ckpt best_model.pt \
-  --cell_type <CELL_TYPE_NAME> \
+  --cell_type <CELL_TYPE> \
   --use_original_only \
   --n_steps 50 \
   --topk 200
@@ -315,7 +285,7 @@ python interpret.py \
   --data_dir /path/to/processed_data \
   --run_dir runs/grasp_full \
   --ckpt best_model.pt \
-  --cell_type <CELL_TYPE_NAME> \
+  --cell_type <CELL_TYPE> \
   --tg_targets 0:200 \
   --tf_targets 0:100 \
   --topk 200
@@ -325,14 +295,14 @@ python interpret.py \
 
 ## Public Data Sources Used in the Paper
 
-The full benchmark datasets are not required for the smoke test above. The paper-level experiments use public datasets and public benchmark resources:
+The full benchmark datasets are not required for the smoke test above. The paper-level experiments use public datasets and resources:
 
-- PBMC dataset: 10x Genomics 10k Human PBMCs, Multiome v1.0, Chromium X.
-- BMMC dataset: NeurIPS 2021 Single-Cell Competition dataset.
-- TF–RE benchmark labels: CistromeDB ChIP-seq resources.
-- TF–TG benchmark labels: KnockTF KO/KD resources.
-- RE–TG benchmark labels: GTEx eQTL resources.
-- TF motif priors: JASPAR 2024.
+- **PBMC dataset**: 10x Genomics 10k Human PBMCs, Multiome v1.0, Chromium X.
+- **BMMC dataset**: NeurIPS 2021 Single-Cell Competition dataset.
+- **TF–RE benchmark labels**: CistromeDB ChIP-seq resources.
+- **TF–TG benchmark labels**: KnockTF KO/KD resources.
+- **RE–TG benchmark labels**: GTEx eQTL resources.
+- **TF motif priors**: JASPAR 2024.
 
 Users who want to reproduce the full benchmark should download the above public datasets, run the preprocessing pipeline, construct motif/TSS priors, and then train/evaluate GRaSP using the full-data commands described above.
 
@@ -342,7 +312,7 @@ Users who want to reproduce the full benchmark should download the above public 
 
 - Raw cells should be split into training, validation, and test sets **before** data augmentation.
 - Augmentation should be applied only to the training set.
-- Scalers should be fit on the training set only and reused for validation/test/interpretable inference.
+- Scalers should be fit on the training set only and reused for validation/test/interpretability inference.
 - Reported evaluation in the manuscript uses threshold-free ranking metrics such as AUROC and AUPRC/AUPR ratio.
 - The example/test dataset is for workflow verification only; it is not intended to reproduce manuscript-level performance.
 
@@ -352,17 +322,14 @@ Users who want to reproduce the full benchmark should download the above public 
 
 ### `captum` import error
 
-Install Captum:
-
 ```bash
 pip install captum
 ```
 
 ### CUDA out-of-memory error
 
-Reduce one or more of the following:
-
-```bash
+Reduce one or more of the following arguments:
+```
 --batch_size
 --max_neighbors
 --neg_k
@@ -372,25 +339,41 @@ Reduce one or more of the following:
 ### No Integrated Gradients output for a cell type
 
 Check that the requested cell type appears in `test_cell_types.csv`:
-
 ```bash
-python - <<'PY'
+python -c "
 import pandas as pd
 labels = pd.read_csv('examples/test_data/test_cell_types.csv')
 print(labels.iloc[:, 0].dropna().astype(str).unique())
-PY
+"
 ```
 
 ### Empty or uninformative regulatory edges
 
 Confirm that the prior matrices are present and non-empty:
-
 ```bash
-ls -lh examples/test_data/*motif* examples/test_data/*sparse* examples/test_data/*tss* 2>/dev/null
+ls -lh examples/test_data/*motif* examples/test_data/*sparse*
 ```
 
 ---
 
 ## License
 
-Please specify the repository license here, for example MIT, BSD-3-Clause, Apache-2.0, or GPL-compatible license.
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Citation
+
+If you use GRaSP in your research, please cite:
+
+```bibtex
+@software{grasp2026,
+  author       = {EdwardCurry},
+  title        = {EdwardCurry/GRaSP: GRaSP\_Zenodo},
+  year         = {2026},
+  publisher    = {Zenodo},
+  version      = {v1.0.0},
+  doi          = {10.5281/zenodo.20353446},
+  url          = {https://doi.org/10.5281/zenodo.20353446}
+}
+```

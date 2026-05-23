@@ -33,6 +33,10 @@ Thumbs.db
 *.h5ad
 *.hkl
 
+# Allow example/test data
+!examples/test_data/*.csv
+!examples/test_data/*.npz
+
 # Wandb
 wandb/
 
