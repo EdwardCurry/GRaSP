@@ -1,22 +1,13 @@
 # GRaSP
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20353446.svg)](https://doi.org/10.5281/zenodo.20353446)
+
 This repository contains the code for the paper:
 
 **“Mechanism-Driven Cross-Modality Modeling for Gene Regulatory Network Inference from Single-Cell Multi-Omics”**
 
 GRaSP is a **mechanism-driven** framework for gene regulatory network (GRN) inference from paired single-cell RNA-seq and single-cell ATAC-seq data. It explicitly models the **transcription factor–regulatory element–target gene (TF–RE–TG) cascade** and learns regulatory associations under biologically feasible cross-modality interactions derived from TF binding motifs and genomic proximity priors.
 
----
-
-## Code and Archival Version
-
-The latest source code, documentation, and example/test data are available from the GitHub repository:
-
-- GitHub: https://github.com/EdwardCurry/GRaSP
-
-A frozen archival version of the code is available on Zenodo:
-
-- Zenodo DOI: https://doi.org/10.5281/zenodo.20353446
 
 ## Repository Structure
 
@@ -342,7 +333,6 @@ The full benchmark datasets are not required for the smoke test above. The paper
 - TF–TG benchmark labels: KnockTF KO/KD resources.
 - RE–TG benchmark labels: GTEx eQTL resources.
 - TF motif priors: JASPAR 2024.
-- Software archive: Zenodo DOI https://doi.org/10.5281/zenodo.20353446.
 
 Users who want to reproduce the full benchmark should download the above public datasets, run the preprocessing pipeline, construct motif/TSS priors, and then train/evaluate GRaSP using the full-data commands described above.
 
@@ -404,15 +394,3 @@ ls -lh examples/test_data/*motif* examples/test_data/*sparse* examples/test_data
 ## License
 
 Please specify the repository license here, for example MIT, BSD-3-Clause, Apache-2.0, or GPL-compatible license.
-
----
-
-## Contact
-
-For questions about GRaSP, please contact:
-
-**Qiang Liu**  
-New Laboratory of Pattern Recognition (NLPR),  
-State Key Laboratory of Multimodal Artificial Intelligence Systems (MAIS),  
-Institute of Automation, Chinese Academy of Sciences (CASIA), Beijing, China  
-`qiang.liu@nlpr.ia.ac.cn`
