@@ -353,3 +353,11 @@ Confirm that the prior matrices are present and non-empty:
 ```bash
 ls -lh examples/test_data/*motif* examples/test_data/*sparse*
 ```
+
+---
+
+## License
+
+This project is licensed under the **MIT License**.
+
+---
