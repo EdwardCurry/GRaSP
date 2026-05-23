@@ -353,27 +353,3 @@ Confirm that the prior matrices are present and non-empty:
 ```bash
 ls -lh examples/test_data/*motif* examples/test_data/*sparse*
 ```
-
----
-
-## License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
-
-## Citation
-
-If you use GRaSP in your research, please cite:
-
-```bibtex
-@software{grasp2026,
-  author       = {EdwardCurry},
-  title        = {EdwardCurry/GRaSP: GRaSP\_Zenodo},
-  year         = {2026},
-  publisher    = {Zenodo},
-  version      = {v1.0.0},
-  doi          = {10.5281/zenodo.20353446},
-  url          = {https://doi.org/10.5281/zenodo.20353446}
-}
-```
