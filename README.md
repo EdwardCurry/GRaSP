@@ -1,6 +1,6 @@
 # GRaSP
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20353446.svg)](https://doi.org/10.5281/zenodo.20353446)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20353444.svg)](https://doi.org/10.5281/zenodo.20353444)
 
 This repository contains the code for the paper:
 
